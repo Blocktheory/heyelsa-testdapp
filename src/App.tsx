@@ -21,7 +21,7 @@ function App() {
             dappName="Uniswap"
             keyId="686bd44d-677c-11f0-b3d8-42010a80001a"
             customStyles={{
-              primaryColor: "#ff37c7"
+              primaryColor: "#D90013"
             }}
           />
         </main>
