@@ -173,7 +173,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setCurrentChain(null);
   }, []);
 
-  // Listen for chain changes
+  // Listen for chain changes and disconnect events
   useEffect(() => {
     if (typeof window.ethereum !== 'undefined') {
       const handleChainChanged = () => {
@@ -186,12 +186,19 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
       };
 
+      const handleWalletDisconnect = () => {
+        console.log('Received wallet-disconnect event, disconnecting...');
+        disconnect();
+      };
+
       window.ethereum.on('chainChanged', handleChainChanged);
       window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.addEventListener('wallet-disconnect', handleWalletDisconnect);
 
       return () => {
         window.ethereum.removeListener('chainChanged', handleChainChanged);
         window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        window.removeEventListener('wallet-disconnect', handleWalletDisconnect);
       };
     }
   }, [getCurrentChain, disconnect]);

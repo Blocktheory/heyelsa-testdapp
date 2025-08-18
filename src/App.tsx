@@ -3,8 +3,11 @@ import React from 'react';
 import { WalletProvider } from './context/WalletContext';
 import WalletTiles from './components/WalletTiles';
 import { HeyElsaChatWidget } from 'heyelsa-chat-widget';
+import { createWalletBridge } from './dappBridge';
 
 function App() {
+  const messagePort = createWalletBridge();
+
   return (
     <WalletProvider>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-100">
@@ -18,8 +21,8 @@ function App() {
           <WalletTiles />
           <HeyElsaChatWidget 
             position="bottom-right"
-            dappName="Uniswap"
-            keyId="686bd44d-677c-11f0-b3d8-42010a80001a"
+            messagePort={messagePort}
+            keyId="uniswap"
             customStyles={{
               primaryColor: "#D90013"
             }}
