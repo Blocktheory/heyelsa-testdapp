@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { SUPPORTED_CHAINS, ChainConfig } from '../config/chains';
+import { syncWalletState } from 'heyelsa-chat-widget';
 
 declare global {
   interface Window {
@@ -22,6 +23,7 @@ interface WalletContextType {
   provider: ethers.BrowserProvider | null;
   signer: ethers.JsonRpcSigner | null;
   currentChain: ChainConfig | null;
+  balance: string | null;
   connectWallet: () => Promise<void>;
   signMessage: (message: string) => Promise<string>;
   signAndBroadcastTransaction: (txData: TransactionData) => Promise<string>;
@@ -30,6 +32,20 @@ interface WalletContextType {
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
+
+const getChainNameById = (chainId: string): string => {
+  const chainNames: Record<string, string> = {
+    '0x1': 'Ethereum Mainnet',
+    '0x89': 'Polygon Mainnet',
+    '0xa4b1': 'Arbitrum One',
+    '0xa': 'Optimism',
+    '0x2105': 'Base',
+    '0xa86a': 'Avalanche C-Chain',
+    '0x38': 'BNB Smart Chain',
+    '0x74c': 'Soneium',
+  };
+  return chainNames[chainId] || `Chain ${chainId}`;
+};
 
 export const useWallet = () => {
   const context = useContext(WalletContext);
@@ -44,20 +60,51 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
   const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null);
   const [currentChain, setCurrentChain] = useState<ChainConfig | null>(null);
+  const [balance, setBalance] = useState<string | null>(null);
 
   const getCurrentChain = useCallback(async () => {
     if (typeof window.ethereum !== 'undefined') {
       try {
         const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        console.log('Current chainId:', chainId);
+        
+        // Find the chain from SUPPORTED_CHAINS
         const chain = Object.values(SUPPORTED_CHAINS).find(c => c.chainId === chainId);
-        setCurrentChain(chain || null);
-        return chain;
+        console.log('Found chain:', chain);
+        
+        if (chain) {
+          setCurrentChain(chain);
+          return chain;
+        } else {
+          // Create a fallback chain object if not found in supported chains
+          const fallbackChain: ChainConfig = {
+            chainId: chainId,
+            chainName: getChainNameById(chainId),
+            nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+            rpcUrls: [],
+            blockExplorerUrls: []
+          };
+          setCurrentChain(fallbackChain);
+          return fallbackChain;
+        }
       } catch (error) {
         console.error('Error getting current chain:', error);
         return null;
       }
     }
     return null;
+  }, []);
+
+  const getWalletBalance = useCallback(async (address: string, provider: ethers.BrowserProvider) => {
+    try {
+      const balanceWei = await provider.getBalance(address);
+      const balanceEth = ethers.formatEther(balanceWei);
+      setBalance(balanceEth);
+      return balanceEth;
+    } catch (error) {
+      console.error('Error fetching balance:', error);
+      return '0';
+    }
   }, []);
 
   const connectWallet = useCallback(async () => {
@@ -72,15 +119,28 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setSigner(signer);
         setAccount(address);
         
-        // Get current chain
-        await getCurrentChain();
+        // Get current chain and balance
+        const chain = await getCurrentChain();
+        const walletBalance = await getWalletBalance(address, provider);
+        
+        // Sync wallet state with widget
+        if (chain) {
+          syncWalletState({
+            isConnected: true,
+            address: address,
+            chainId: chain.chainId,
+            chainName: chain.chainName,
+            balance: walletBalance,
+            nativeCurrency: chain.nativeCurrency
+          });
+        }
       } else {
         alert('Please install MetaMask or another Web3 wallet');
       }
     } catch (error) {
       console.error('Error connecting wallet:', error);
     }
-  }, [getCurrentChain]);
+  }, [getCurrentChain, getWalletBalance]);
 
   const signMessage = useCallback(async (message: string): Promise<string> => {
     if (!signer) {
@@ -171,13 +231,30 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setProvider(null);
     setSigner(null);
     setCurrentChain(null);
+    setBalance(null);
+    
+    // Sync disconnection state with widget
+    syncWalletState({
+      isConnected: false
+    });
   }, []);
 
   // Listen for chain changes and disconnect events
   useEffect(() => {
     if (typeof window.ethereum !== 'undefined') {
-      const handleChainChanged = () => {
-        getCurrentChain();
+      const handleChainChanged = async () => {
+        const chain = await getCurrentChain();
+        if (account && provider && chain) {
+          const walletBalance = await getWalletBalance(account, provider);
+          syncWalletState({
+            isConnected: true,
+            address: account,
+            chainId: chain.chainId,
+            chainName: chain.chainName,
+            balance: walletBalance,
+            nativeCurrency: chain.nativeCurrency
+          });
+        }
       };
 
       const handleAccountsChanged = (accounts: string[]) => {
@@ -191,17 +268,48 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         disconnect();
       };
 
+      const handleWalletConnect = async (event: any) => {
+        console.log('Received wallet-connect event, updating context...', event.detail);
+        // Refresh wallet context after bridge connection
+        try {
+          await connectWallet();
+        } catch (error) {
+          console.error('Error updating wallet context after bridge connect:', error);
+        }
+      };
+
+      const handleNetworkChanged = async (event: any) => {
+        console.log('Received wallet-network-changed event, updating context...', event.detail);
+        // Update current chain after network switch
+        const chain = await getCurrentChain();
+        if (account && provider && chain) {
+          const walletBalance = await getWalletBalance(account, provider);
+          syncWalletState({
+            isConnected: true,
+            address: account,
+            chainId: chain.chainId,
+            chainName: chain.chainName,
+            balance: walletBalance,
+            nativeCurrency: chain.nativeCurrency
+          });
+        }
+      };
+
       window.ethereum.on('chainChanged', handleChainChanged);
       window.ethereum.on('accountsChanged', handleAccountsChanged);
       window.addEventListener('wallet-disconnect', handleWalletDisconnect);
+      window.addEventListener('wallet-connect', handleWalletConnect);
+      window.addEventListener('wallet-network-changed', handleNetworkChanged);
 
       return () => {
         window.ethereum.removeListener('chainChanged', handleChainChanged);
         window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
         window.removeEventListener('wallet-disconnect', handleWalletDisconnect);
+        window.removeEventListener('wallet-connect', handleWalletConnect);
+        window.removeEventListener('wallet-network-changed', handleNetworkChanged);
       };
     }
-  }, [getCurrentChain, disconnect]);
+  }, [getCurrentChain, disconnect, connectWallet, getWalletBalance, account, provider]);
 
   const value = {
     account,
@@ -209,6 +317,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     provider,
     signer,
     currentChain,
+    balance,
     connectWallet,
     signMessage,
     signAndBroadcastTransaction,

@@ -22,10 +22,8 @@ function getEthereum() {
 
 export function createWalletBridge() {
   const channel = new MessageChannel();
-
   channel.port1.onmessage = async (event) => {
     const req: WalletRequest = event.data;
-    console.log('DApp received wallet request:', req);
 
     const response: WalletResponse = {
       requestId: req.requestId,
@@ -37,10 +35,6 @@ export function createWalletBridge() {
     try {
       let result;
 
-      if (req.chain !== 'ethereum' && req.chain !== 'evm') {
-        throw new Error(`Unsupported chain: ${req.chain}. Only EVM chains are supported.`);
-      }
-
       const ethereum = getEthereum();
 
       switch (req.action) {
@@ -50,6 +44,8 @@ export function createWalletBridge() {
           result = await ethereum.request({
             method: 'eth_requestAccounts'
           });
+          // Trigger wallet context update in dApp
+          window.dispatchEvent(new CustomEvent('wallet-connect', { detail: { accounts: result } }));
           break;
           
         case "DISCONNECT_WALLET":
@@ -152,6 +148,8 @@ export function createWalletBridge() {
               params: [{ chainId: req.params.chainId }]
             });
             result = { chainId: req.params.chainId, status: 'switched' };
+            // Trigger wallet context update for network switch
+            window.dispatchEvent(new CustomEvent('wallet-network-changed', { detail: { chainId: req.params.chainId } }));
           } catch (switchError: any) {
             if (switchError.code === 4902) {
               if (req.params.networkConfig) {
@@ -160,6 +158,8 @@ export function createWalletBridge() {
                   params: [req.params.networkConfig]
                 });
                 result = { chainId: req.params.chainId, status: 'added_and_switched' };
+                // Trigger wallet context update for network add and switch
+                window.dispatchEvent(new CustomEvent('wallet-network-changed', { detail: { chainId: req.params.chainId } }));
               } else {
                 throw new Error('Network not found and no network config provided');
               }
@@ -183,6 +183,5 @@ export function createWalletBridge() {
 
     channel.port1.postMessage(response);
   };
-
   return channel.port2;
 }

@@ -96,4 +96,16 @@ export const SUPPORTED_CHAINS: Record<string, ChainConfig> = {
     blockExplorerUrls: ['https://bscscan.com'],
     iconUrl: '🟡',
   },
+  soneium: {
+    chainId: '0x74c',
+    chainName: 'Soneium',
+    nativeCurrency: {
+      name: 'Ether',
+      symbol: 'ETH',
+      decimals: 18,
+    },
+    rpcUrls: ['https://rpc.soneium.org'],
+    blockExplorerUrls: ['https://soneium.blockscout.com'],
+    iconUrl: '🟠',
+  },
 };
