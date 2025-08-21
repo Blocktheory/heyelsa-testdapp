@@ -37,11 +37,7 @@ const getChainNameById = (chainId: string): string => {
   const chainNames: Record<string, string> = {
     '0x1': 'Ethereum Mainnet',
     '0x89': 'Polygon Mainnet',
-    '0xa4b1': 'Arbitrum One',
-    '0xa': 'Optimism',
     '0x2105': 'Base',
-    '0xa86a': 'Avalanche C-Chain',
-    '0x38': 'BNB Smart Chain',
     '0x74c': 'Soneium',
   };
   return chainNames[chainId] || `Chain ${chainId}`;
@@ -66,11 +62,9 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (typeof window.ethereum !== 'undefined') {
       try {
         const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-        console.log('Current chainId:', chainId);
         
         // Find the chain from SUPPORTED_CHAINS
         const chain = Object.values(SUPPORTED_CHAINS).find(c => c.chainId === chainId);
-        console.log('Found chain:', chain);
         
         if (chain) {
           setCurrentChain(chain);
@@ -88,7 +82,6 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           return fallbackChain;
         }
       } catch (error) {
-        console.error('Error getting current chain:', error);
         return null;
       }
     }
@@ -102,7 +95,6 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setBalance(balanceEth);
       return balanceEth;
     } catch (error) {
-      console.error('Error fetching balance:', error);
       return '0';
     }
   }, []);
@@ -138,7 +130,6 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         alert('Please install MetaMask or another Web3 wallet');
       }
     } catch (error) {
-      console.error('Error connecting wallet:', error);
     }
   }, [getCurrentChain, getWalletBalance]);
 
@@ -265,7 +256,6 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
               nativeCurrency: chain.nativeCurrency
             });
           } catch (error) {
-            console.error('Error handling chain change:', error);
             // Set balance to '0' on error
             setBalance('0');
           }
@@ -279,22 +269,18 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       };
 
       const handleWalletDisconnect = () => {
-        console.log('Received wallet-disconnect event, disconnecting...');
         disconnect();
       };
 
       const handleWalletConnect = async (event: any) => {
-        console.log('Received wallet-connect event, updating context...', event.detail);
         // Refresh wallet context after bridge connection
         try {
           await connectWallet();
         } catch (error) {
-          console.error('Error updating wallet context after bridge connect:', error);
         }
       };
 
       const handleNetworkChanged = async (event: any) => {
-        console.log('Received wallet-network-changed event, updating context...', event.detail);
         // Update current chain after network switch
         const chain = await getCurrentChain();
         if (account && chain) {
@@ -318,7 +304,6 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
               nativeCurrency: chain.nativeCurrency
             });
           } catch (error) {
-            console.error('Error handling network change:', error);
             // Set balance to '0' on error
             setBalance('0');
           }

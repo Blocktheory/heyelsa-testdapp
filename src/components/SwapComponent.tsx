@@ -57,7 +57,6 @@ const SwapComponent: React.FC = () => {
       const hash = await swapService.executeSwap(swapParams, signer);
       setSwapHash(hash);
     } catch (error: any) {
-      console.error('Swap failed:', error);
       alert(`Swap failed: ${error.message}`);
     } finally {
       setIsSwapping(false);

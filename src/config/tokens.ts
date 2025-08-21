@@ -94,68 +94,6 @@ export const COMMON_TOKENS: Record<string, TokenInfo[]> = {
       decimals: 18,
     },
   ],
-  // Arbitrum
-  '42161': [
-    {
-      chainId: 42161,
-      address: '0x0000000000000000000000000000000000000000',
-      name: 'Ether',
-      symbol: 'ETH',
-      decimals: 18,
-    },
-    {
-      chainId: 42161,
-      address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
-      name: 'USD Coin',
-      symbol: 'USDC',
-      decimals: 6,
-    },
-    {
-      chainId: 42161,
-      address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
-      name: 'Tether USD',
-      symbol: 'USDT',
-      decimals: 6,
-    },
-    {
-      chainId: 42161,
-      address: '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',
-      name: 'Dai Stablecoin',
-      symbol: 'DAI',
-      decimals: 18,
-    },
-  ],
-  // Optimism
-  '10': [
-    {
-      chainId: 10,
-      address: '0x0000000000000000000000000000000000000000',
-      name: 'Ether',
-      symbol: 'ETH',
-      decimals: 18,
-    },
-    {
-      chainId: 10,
-      address: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85',
-      name: 'USD Coin',
-      symbol: 'USDC',
-      decimals: 6,
-    },
-    {
-      chainId: 10,
-      address: '0x94b008aA00579c1307B0EF2c499aD98a8ce58e58',
-      name: 'Tether USD',
-      symbol: 'USDT',
-      decimals: 6,
-    },
-    {
-      chainId: 10,
-      address: '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',
-      name: 'Dai Stablecoin',
-      symbol: 'DAI',
-      decimals: 18,
-    },
-  ],
 };
 
 export const getTokensByChainId = (chainId: number): TokenInfo[] => {

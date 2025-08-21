@@ -38,8 +38,7 @@ export class SwapService {
       });
 
       if (!response.ok) {
-        console.warn('1inch API failed, falling back to simple calculation');
-        return this.getFallbackQuote(params);
+          return this.getFallbackQuote(params);
       }
 
       const data = await response.json();
@@ -54,7 +53,6 @@ export class SwapService {
         quotedGasPrice: data.gasPrice
       };
     } catch (error) {
-      console.error('Quote failed:', error);
       return this.getFallbackQuote(params);
     }
   }

@@ -11,11 +11,7 @@ const NetworkToastHandler: React.FC = () => {
     const chainNames: Record<string, string> = {
       '0x1': 'Ethereum Mainnet',
       '0x89': 'Polygon Mainnet',
-      '0xa4b1': 'Arbitrum One',
-      '0xa': 'Optimism',
       '0x2105': 'Base',
-      '0xa86a': 'Avalanche C-Chain',
-      '0x38': 'BNB Smart Chain',
       '0x74c': 'Soneium',
     };
     return chainNames[chainId] || `Chain ${chainId}`;
@@ -23,7 +19,6 @@ const NetworkToastHandler: React.FC = () => {
 
   useEffect(() => {
     const handleNetworkSwitched = (event: any) => {
-      console.log('Network switch event received:', event.type, event.detail);
       
       // Get chain name from event details instead of stale React state
       let chainName = 'Unknown Network';

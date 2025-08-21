@@ -32,7 +32,6 @@ const WalletTiles: React.FC = () => {
     try {
       await connectWallet();
     } catch (error) {
-      console.error('Connection failed:', error);
     } finally {
       setIsLoading(false);
     }
@@ -44,7 +43,6 @@ const WalletTiles: React.FC = () => {
       const sig = await signMessage(messageToSign);
       setSignature(sig);
     } catch (error) {
-      console.error('Signing failed:', error);
       alert('Signing failed. Please try again.');
     } finally {
       setIsLoading(false);
@@ -57,7 +55,6 @@ const WalletTiles: React.FC = () => {
       const hash = await signAndBroadcastTransaction(txData);
       setTxHash(hash);
     } catch (error: any) {
-      console.error('Transaction failed:', error);
       alert(`Transaction failed: ${error.message}`);
     } finally {
       setIsLoading(false);
@@ -76,7 +73,6 @@ const WalletTiles: React.FC = () => {
     try {
       await switchChain(chainKey);
     } catch (error: any) {
-      console.error('Chain switch failed:', error);
       alert(`Failed to switch chain: ${error.message}`);
     } finally {
       setIsLoading(false);

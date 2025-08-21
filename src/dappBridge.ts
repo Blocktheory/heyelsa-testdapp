@@ -56,13 +56,11 @@ export function createWalletBridge() {
               params: [{eth_accounts: {}}]
             });
           } catch (error) {
-            console.log('Disconnect method failed, using fallback');
           }
           
           // Set global flag to track disconnect state
           (window as any).walletDisconnected = true;
           // Trigger disconnect event that WalletContext can listen to
-          console.log('Dispatching wallet-disconnect event');
           window.dispatchEvent(new CustomEvent('wallet-disconnect'));
           result = { status: 'disconnected' };
           break;
@@ -71,14 +69,12 @@ export function createWalletBridge() {
           // After disconnect, return empty array instead of MetaMask's accounts
           if ((window as any).walletDisconnected) {
             result = [];
-            console.log('Wallet is disconnected, returning empty accounts');
           } else {
             result = await ethereum.request({
               method: 'eth_accounts'
             });
             if (result.length === 0) {
-              console.warn('No accounts connected. Call CONNECT_WALLET first to establish connection.');
-            }
+              }
           }
           break;
           
@@ -186,7 +182,6 @@ export function createWalletBridge() {
       response.data = result;
       
     } catch (err: any) {
-      console.error('Wallet operation failed:', err);
       response.error = err.message || 'Wallet operation failed';
     }
 
