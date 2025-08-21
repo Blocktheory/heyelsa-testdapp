@@ -244,16 +244,31 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (typeof window.ethereum !== 'undefined') {
       const handleChainChanged = async () => {
         const chain = await getCurrentChain();
-        if (account && provider && chain) {
-          const walletBalance = await getWalletBalance(account, provider);
-          syncWalletState({
-            isConnected: true,
-            address: account,
-            chainId: chain.chainId,
-            chainName: chain.chainName,
-            balance: walletBalance,
-            nativeCurrency: chain.nativeCurrency
-          });
+        if (account && chain) {
+          try {
+            // Create a fresh provider for the new network
+            const newProvider = new ethers.BrowserProvider(window.ethereum);
+            const newSigner = await newProvider.getSigner();
+            
+            // Update provider and signer state
+            setProvider(newProvider);
+            setSigner(newSigner);
+            
+            // Get balance with the fresh provider
+            const walletBalance = await getWalletBalance(account, newProvider);
+            syncWalletState({
+              isConnected: true,
+              address: account,
+              chainId: chain.chainId,
+              chainName: chain.chainName,
+              balance: walletBalance,
+              nativeCurrency: chain.nativeCurrency
+            });
+          } catch (error) {
+            console.error('Error handling chain change:', error);
+            // Set balance to '0' on error
+            setBalance('0');
+          }
         }
       };
 
@@ -282,16 +297,31 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         console.log('Received wallet-network-changed event, updating context...', event.detail);
         // Update current chain after network switch
         const chain = await getCurrentChain();
-        if (account && provider && chain) {
-          const walletBalance = await getWalletBalance(account, provider);
-          syncWalletState({
-            isConnected: true,
-            address: account,
-            chainId: chain.chainId,
-            chainName: chain.chainName,
-            balance: walletBalance,
-            nativeCurrency: chain.nativeCurrency
-          });
+        if (account && chain) {
+          try {
+            // Create a fresh provider for the new network
+            const newProvider = new ethers.BrowserProvider(window.ethereum);
+            const newSigner = await newProvider.getSigner();
+            
+            // Update provider and signer state
+            setProvider(newProvider);
+            setSigner(newSigner);
+            
+            // Get balance with the fresh provider
+            const walletBalance = await getWalletBalance(account, newProvider);
+            syncWalletState({
+              isConnected: true,
+              address: account,
+              chainId: chain.chainId,
+              chainName: chain.chainName,
+              balance: walletBalance,
+              nativeCurrency: chain.nativeCurrency
+            });
+          } catch (error) {
+            console.error('Error handling network change:', error);
+            // Set balance to '0' on error
+            setBalance('0');
+          }
         }
       };
 

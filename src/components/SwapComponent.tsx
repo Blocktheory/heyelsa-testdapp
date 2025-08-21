@@ -34,45 +34,6 @@ const SwapComponent: React.FC = () => {
     }
   }, [currentChain]);
 
-  const getQuote = useCallback(async () => {
-    if (!tokenIn || !tokenOut || !amountIn || !provider || !currentChain || parseFloat(amountIn) <= 0) {
-      setQuote(null);
-      setAmountOut('0');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const chainId = parseInt(currentChain.chainId, 16);
-      const swapService = new SwapService(provider, chainId);
-      
-      const swapParams: SwapParams = {
-        tokenIn,
-        tokenOut,
-        amountIn,
-        slippageTolerance: slippage,
-        recipient: account || ''
-      };
-
-      const newQuote = await swapService.getQuote(swapParams);
-      setQuote(newQuote);
-      setAmountOut(newQuote?.outputAmount || '0');
-    } catch (error) {
-      console.error('Failed to get quote:', error);
-      setQuote(null);
-      setAmountOut('0');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [tokenIn, tokenOut, amountIn, provider, currentChain, slippage, account]);
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      getQuote();
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
-  }, [getQuote]);
 
   const handleSwap = async () => {
     if (!tokenIn || !tokenOut || !amountIn || !signer || !account || !provider || !currentChain) {

@@ -168,6 +168,15 @@ export function createWalletBridge() {
             }
           }
           break;
+
+        case "NETWORK_SWITCHED_EVENT":
+          // This is a notification event, not an action that requires a response
+          // Dispatch the event to be handled by the dApp
+          window.dispatchEvent(new CustomEvent('NETWORK_SWITCHED_EVENT', { 
+            detail: req.params || {} 
+          }));
+          result = { status: 'event_dispatched' };
+          break;
           
         default:
           throw new Error(`Unsupported action: ${req.action}`);
