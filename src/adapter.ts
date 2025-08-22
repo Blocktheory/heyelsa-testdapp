@@ -1,31 +1,30 @@
-interface WalletRequest {
+interface AdapterRequest {
   requestId: string;
   action: string;
   chain: string;
   params?: any;
 }
 
-interface WalletResponse {
+interface AdapterResponse {
   requestId: string;
   success: boolean;
   data?: any;
   error?: string;
 }
 
-
-function getEthereum() {
+function getEthereumProvider() {
   if (typeof window !== 'undefined' && window.ethereum) {
     return window.ethereum;
   }
   throw new Error('MetaMask not installed. Please install MetaMask to use this feature.');
 }
 
-export function createWalletBridge() {
+export function createWalletAdapter() {
   const channel = new MessageChannel();
   channel.port1.onmessage = async (event) => {
-    const req: WalletRequest = event.data;
+    const req: AdapterRequest = event.data;
 
-    const response: WalletResponse = {
+    const response: AdapterResponse = {
       requestId: req.requestId,
       success: false,
       data: null,
@@ -35,22 +34,19 @@ export function createWalletBridge() {
     try {
       let result;
 
-      const ethereum = getEthereum();
+      const ethereum = getEthereumProvider();
 
       switch (req.action) {
         case "CONNECT_WALLET":
-          // Clear disconnect flag when connecting
           (window as any).walletDisconnected = false;
           result = await ethereum.request({
             method: 'eth_requestAccounts'
           });
-          // Trigger wallet context update in dApp
           window.dispatchEvent(new CustomEvent('wallet-connect', { detail: { accounts: result } }));
           break;
           
         case "DISCONNECT_WALLET":
           try {
-            // Use the provided disconnect method
             await ethereum.request({
               method: "eth_requestAccounts",
               params: [{eth_accounts: {}}]
@@ -58,23 +54,18 @@ export function createWalletBridge() {
           } catch (error) {
           }
           
-          // Set global flag to track disconnect state
           (window as any).walletDisconnected = true;
-          // Trigger disconnect event that WalletContext can listen to
           window.dispatchEvent(new CustomEvent('wallet-disconnect'));
           result = { status: 'disconnected' };
           break;
           
         case "GET_ACCOUNTS":
-          // After disconnect, return empty array instead of MetaMask's accounts
           if ((window as any).walletDisconnected) {
             result = [];
           } else {
             result = await ethereum.request({
               method: 'eth_accounts'
             });
-            if (result.length === 0) {
-              }
           }
           break;
           
@@ -144,7 +135,6 @@ export function createWalletBridge() {
               params: [{ chainId: req.params.chainId }]
             });
             result = { chainId: req.params.chainId, status: 'switched' };
-            // Trigger wallet context update for network switch
             window.dispatchEvent(new CustomEvent('wallet-network-changed', { detail: { chainId: req.params.chainId } }));
           } catch (switchError: any) {
             if (switchError.code === 4902) {
@@ -154,7 +144,6 @@ export function createWalletBridge() {
                   params: [req.params.networkConfig]
                 });
                 result = { chainId: req.params.chainId, status: 'added_and_switched' };
-                // Trigger wallet context update for network add and switch
                 window.dispatchEvent(new CustomEvent('wallet-network-changed', { detail: { chainId: req.params.chainId } }));
               } else {
                 throw new Error('Network not found and no network config provided');
@@ -166,8 +155,6 @@ export function createWalletBridge() {
           break;
 
         case "NETWORK_SWITCHED_EVENT":
-          // This is a notification event, not an action that requires a response
-          // Dispatch the event to be handled by the dApp
           window.dispatchEvent(new CustomEvent('NETWORK_SWITCHED_EVENT', { 
             detail: req.params || {} 
           }));

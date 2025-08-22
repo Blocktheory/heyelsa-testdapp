@@ -5,10 +5,10 @@ import { ToastProvider } from './context/ToastContext';
 import WalletTiles from './components/WalletTiles';
 import NetworkToastHandler from './components/NetworkToastHandler';
 import { HeyElsaChatWidget } from 'heyelsa-chat-widget';
-import { createWalletBridge } from './dappBridge';
+import { createWalletAdapter } from './adapter';
 
 function App() {
-  const messagePort = createWalletBridge();
+  const messagePort = createWalletAdapter();
 
   return (
     <WalletProvider>
