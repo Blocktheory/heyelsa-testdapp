@@ -66,6 +66,7 @@ export function createWalletAdapter() {
             result = await ethereum.request({
               method: 'eth_accounts'
             });
+            window.dispatchEvent(new CustomEvent('wallet-connect', { detail: { accounts: result } }));
           }
           break;
           
