@@ -123,7 +123,8 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             chainId: chain.chainId,
             chainName: chain.chainName,
             balance: walletBalance,
-            nativeCurrency: chain.nativeCurrency
+            nativeCurrency: chain.nativeCurrency,
+            supportedNetworks: ['0x1', '0x89', '0x2105', '0x74c']
           });
         }
       } else {
@@ -226,7 +227,8 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     
     // Sync disconnection state with widget
     syncWalletState({
-      isConnected: false
+      isConnected: false,
+      supportedNetworks: ['0x1', '0x89', '0x2105', '0x74c']
     });
   }, []);
 
@@ -253,7 +255,8 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
               chainId: chain.chainId,
               chainName: chain.chainName,
               balance: walletBalance,
-              nativeCurrency: chain.nativeCurrency
+              nativeCurrency: chain.nativeCurrency,
+              supportedNetworks: ['0x1', '0x89', '0x2105', '0x74c']
             });
           } catch (error) {
             // Set balance to '0' on error
@@ -301,7 +304,8 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
               chainId: chain.chainId,
               chainName: chain.chainName,
               balance: walletBalance,
-              nativeCurrency: chain.nativeCurrency
+              nativeCurrency: chain.nativeCurrency,
+              supportedNetworks: ['0x1', '0x89', '0x2105', '0x74c']
             });
           } catch (error) {
             // Set balance to '0' on error
