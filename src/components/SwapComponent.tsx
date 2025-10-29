@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { TokenInfo, getTokensByChainId } from '../config/tokens';
 import { SwapService, SwapQuote, SwapParams } from '../utils/swapUtils';
@@ -9,9 +9,9 @@ const SwapComponent: React.FC = () => {
   const [tokenIn, setTokenIn] = useState<TokenInfo | null>(null);
   const [tokenOut, setTokenOut] = useState<TokenInfo | null>(null);
   const [amountIn, setAmountIn] = useState<string>('1');
-  const [amountOut, setAmountOut] = useState<string>('0');
-  const [quote, setQuote] = useState<SwapQuote | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [amountOut] = useState<string>('0');
+  const [quote] = useState<SwapQuote | null>(null);
+  const [isLoading] = useState(false);
   const [isSwapping, setIsSwapping] = useState(false);
   const [slippage, setSlippage] = useState<number>(0.5);
   const [availableTokens, setAvailableTokens] = useState<TokenInfo[]>([]);
