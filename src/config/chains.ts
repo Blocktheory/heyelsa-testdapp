@@ -40,8 +40,8 @@ export const SUPPORTED_CHAINS: Record<string, ChainConfig> = {
     chainId: '0x89',
     chainName: 'Polygon Mainnet',
     nativeCurrency: {
-      name: 'MATIC',
-      symbol: 'MATIC',
+      name: 'POL',
+      symbol: 'POL',
       decimals: 18,
     },
     rpcUrls: ['https://polygon-rpc.com/'],

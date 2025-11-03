@@ -68,8 +68,8 @@ export const COMMON_TOKENS: Record<string, TokenInfo[]> = {
     {
       chainId: 137,
       address: '0x0000000000000000000000000000000000000000',
-      name: 'Matic',
-      symbol: 'MATIC',
+      name: 'Pol',
+      symbol: 'POL',
       decimals: 18,
     },
     {
