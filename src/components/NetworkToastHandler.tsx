@@ -9,7 +9,6 @@ const NetworkToastHandler: React.FC = () => {
   // Helper function to get chain name by chainId
   const getChainNameById = (chainId: string): string => {
     const chainNames: Record<string, string> = {
-      '0x1': 'Ethereum Mainnet',
       '0x89': 'Polygon Mainnet',
       '0x2105': 'Base',
       '0x74c': 'Soneium',

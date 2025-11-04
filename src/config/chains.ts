@@ -12,18 +12,6 @@ export interface ChainConfig {
 }
 
 export const SUPPORTED_CHAINS: Record<string, ChainConfig> = {
-  ethereum: {
-    chainId: '0x1',
-    chainName: 'Ethereum Mainnet',
-    nativeCurrency: {
-      name: 'Ether',
-      symbol: 'ETH',
-      decimals: 18,
-    },
-    rpcUrls: ['https://mainnet.infura.io/v3/'],
-    blockExplorerUrls: ['https://etherscan.io'],
-    iconUrl: '🔷',
-  },
   base: {
     chainId: '0x2105',
     chainName: 'Base',

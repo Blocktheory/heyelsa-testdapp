@@ -35,7 +35,6 @@ const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 const getChainNameById = (chainId: string): string => {
   const chainNames: Record<string, string> = {
-    '0x1': 'Ethereum Mainnet',
     '0x89': 'Polygon Mainnet',
     '0x2105': 'Base',
     '0x74c': 'Soneium',
@@ -124,7 +123,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             chainName: chain.chainName,
             balance: walletBalance,
             nativeCurrency: chain.nativeCurrency,
-            supportedNetworks: ['0x1', '0x89', '0x2105', '0x74c']
+            supportedNetworks: ['0x89', '0x2105', '0x74c']
           });
         }
       } else {
@@ -256,7 +255,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
               chainName: chain.chainName,
               balance: walletBalance,
               nativeCurrency: chain.nativeCurrency,
-              supportedNetworks: ['0x1', '0x89', '0x2105', '0x74c']
+              supportedNetworks: ['0x89', '0x2105', '0x74c']
             });
           } catch (error) {
             // Set balance to '0' on error
@@ -305,7 +304,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
               chainName: chain.chainName,
               balance: walletBalance,
               nativeCurrency: chain.nativeCurrency,
-              supportedNetworks: ['0x1', '0x89', '0x2105', '0x74c']
+              supportedNetworks: ['0x89', '0x2105', '0x74c']
             });
           } catch (error) {
             // Set balance to '0' on error

@@ -8,37 +8,6 @@ export interface TokenInfo {
 }
 
 export const COMMON_TOKENS: Record<string, TokenInfo[]> = {
-  // Ethereum Mainnet
-  '1': [
-    {
-      chainId: 1,
-      address: '0x0000000000000000000000000000000000000000',
-      name: 'Ether',
-      symbol: 'ETH',
-      decimals: 18,
-    },
-    {
-      chainId: 1,
-      address: '0xA0b86a33E6441c8C88A13cF89c6D7e4c5e4Ff7e6',
-      name: 'USD Coin',
-      symbol: 'USDC',
-      decimals: 6,
-    },
-    {
-      chainId: 1,
-      address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
-      name: 'Tether USD',
-      symbol: 'USDT',
-      decimals: 6,
-    },
-    {
-      chainId: 1,
-      address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-      name: 'Dai Stablecoin',
-      symbol: 'DAI',
-      decimals: 18,
-    },
-  ],
   // Base
   '8453': [
     {
