@@ -16,13 +16,11 @@ function App() {
     const secureAdapter = createWalletAdapter({
       onSharedSecretReceived: (secret) => {
         setSharedSecret(secret);
-        console.log('🔒 Secure communication established');
       },
       maxMessageAge: 3600000, // 1 hour for development
       debugMode: true, // Enable detailed logging
     });
     setMessagePort(secureAdapter.port2);
-    console.log('🔒 Initialized secure wallet adapter');
   }, []);
 
 
@@ -34,18 +32,6 @@ function App() {
             <div className="px-4 py-8 text-center">
               <h1 className="text-4xl font-bold mb-2">EVM Chain DApp</h1>
               <p className="text-lg opacity-90">Test your wallet connection and signing functionality</p>
-              
-              {/* Security Status */}
-              <div className="mt-4 flex items-center justify-center gap-4">
-                <div className="flex items-center gap-2 px-4 py-2 bg-green-500 rounded-lg">
-                  <span className="text-white font-medium">🔒 Secure Mode</span>
-                  {sharedSecret && (
-                    <span className="text-green-100 text-sm">
-                      ✅ Authenticated
-                    </span>
-                  )}
-                </div>
-              </div>
             </div>
           </header>
           <main className="py-8">

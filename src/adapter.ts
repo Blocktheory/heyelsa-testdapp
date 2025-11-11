@@ -6,6 +6,7 @@ interface AdapterRequest {
   action: string;
   chain: string;
   params?: any;
+  nonce: string; // Challenge nonce from widget for replay protection
 }
 
 interface AdapterResponse {
@@ -13,6 +14,7 @@ interface AdapterResponse {
   success: boolean;
   data?: any;
   error?: string;
+  nonce: string; // Echo back the challenge nonce from the request
 }
 
 interface AuthenticatedMessage {
@@ -139,6 +141,7 @@ class MessageAuthenticator {
       success: response.success,
       data: response.data,
       error: response.error,
+      nonce: response.nonce, // Include nonce for challenge-response verification
       timestamp
     };
 
@@ -159,7 +162,6 @@ class MessageAuthenticator {
 
   setMaxMessageAge(ageInMs: number): void {
     this.maxMessageAge = ageInMs;
-    console.log(`🔒 Max message age set to: ${ageInMs}ms`);
   }
 }
 
@@ -180,8 +182,6 @@ export function createWalletAdapter(options: AdapterOptions = {}) {
     maxMessageAge = 300000, // 5 minutes default
     debugMode = false
   } = options;
-
-  console.log('🔒 Creating secure wallet adapter', { maxMessageAge, debugMode });
 
   // Configure message age tolerance
   if (maxMessageAge !== 300000) {
@@ -205,8 +205,6 @@ export function createWalletAdapter(options: AdapterOptions = {}) {
 
   async function handleSecureMessage(event: MessageEvent): Promise<void> {
     const rawMessage = event.data;
-    
-    console.log('🔒 Adapter: Received message:', rawMessage);
 
     // Basic validation
     if (!rawMessage || typeof rawMessage !== 'object' || !rawMessage.requestId) {
@@ -219,9 +217,7 @@ export function createWalletAdapter(options: AdapterOptions = {}) {
     // Handle widget shared secret exchange
     if (rawMessage.action === 'EXCHANGE_SHARED_SECRET' && rawMessage.widgetSecret) {
       const widgetSecret = rawMessage.widgetSecret;
-      dappAuthenticator.setSharedSecret(widgetSecret);
-      console.log('🔒 Adapter: Received shared secret from widget');
-      
+      dappAuthenticator.setSharedSecret(widgetSecret);      
       // Notify callback if provided
       if (onSharedSecretReceived) {
         onSharedSecretReceived(widgetSecret);
@@ -249,7 +245,8 @@ export function createWalletAdapter(options: AdapterOptions = {}) {
       const errorResponse = {
         requestId: rawMessage.requestId,
         success: false,
-        error: 'SECURITY_ERROR: Shared secret not established. Widget must initialize secure communication first via EXCHANGE_SHARED_SECRET action.'
+        error: 'SECURITY_ERROR: Shared secret not established. Widget must initialize secure communication first via EXCHANGE_SHARED_SECRET action.',
+        nonce: rawMessage.nonce || '' // Echo back nonce if available, empty string if not
       };
       
       channel.port1.postMessage(errorResponse);
@@ -298,7 +295,6 @@ export function createWalletAdapter(options: AdapterOptions = {}) {
       });
 
       const isValid = await dappAuthenticator.verifyIncomingMessage(message as AuthenticatedMessage);
-      console.log('🔒 Adapter: Validation result:', isValid);
       
       return isValid;
     } catch (error) {
@@ -308,8 +304,8 @@ export function createWalletAdapter(options: AdapterOptions = {}) {
   }
 
   function stripAuthenticationFields(message: AuthenticatedMessage): AdapterRequest {
-    const { timestamp, nonce, signature, ...cleanMessage } = message;
-    return cleanMessage;
+    const { timestamp, signature, ...cleanMessage } = message;
+    return cleanMessage; // Keep nonce - it's needed for challenge-response binding
   }
 
   async function createSecureResponse(response: AdapterResponse): Promise<SecureResponse> {
@@ -326,7 +322,8 @@ export function createWalletAdapter(options: AdapterOptions = {}) {
       requestId: req.requestId,
       success: false,
       data: null,
-      error: undefined
+      error: undefined,
+      nonce: req.nonce // Echo back the challenge nonce for verification
     };
 
     try {
