@@ -1,45 +1,110 @@
-# Getting Started with Create React App
+# Test DApp with Secure Widget Integration
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
+
+This dApp demonstrates secure integration with the HeyElsa chat widget, implementing comprehensive security features to prevent message injection and authentication attacks.
+
+## Quick Start
+
+### 1. **Install Dependencies**
+```bash
+npm install
+```
+
+### 2. **Start the dApp**
+```bash
+npm start
+```
+
+### 3. **Start with Debug Logging**
+```bash
+npm run start:debug
+```
+
+## Security Features
+
+- ✅ **HMAC-SHA256 Message Authentication**
+- ✅ **Request-Response Correlation**  
+- ✅ **Replay Attack Prevention**
+- ✅ **Strict Message Validation**
+- ✅ **Visual Security Status Indicators**
+
+## Security Status
+
+The app always runs in secure mode with full authentication:
+- 🔒 **Secure Mode**: HMAC-SHA256 authentication always enabled
+
+## Usage Examples
+
+### Usage
+```typescript
+import { createWalletAdapter } from './adapter';
+
+// Create secure adapter (always secure)
+const secureAdapter = createWalletAdapter({
+  onSharedSecretReceived: (secret) => {
+    console.log('🔒 Secure communication established');
+  }
+});
+
+// Use with widget
+<HeyElsaChatWidget 
+  messagePort={secureAdapter.port2}
+  keyId="your-app"
+/>
+```
 
 ## Available Scripts
 
-In the project directory, you can run:
+- `npm start` - Start the dApp (always secure)
+- `npm run start:debug` - Enable debug logging
+- `npm run build` - Production build
+- `npm test` - Run tests
 
-### `npm start`
+## Security Status
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Current security implementation prevents:
+- ❌ Message injection attacks
+- ❌ Response forgery
+- ❌ Replay attacks  
+- ❌ Man-in-the-middle attacks
+- ❌ Unauthorized wallet operations
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Files Structure
 
-### `npm test`
+```
+src/
+├── adapter.ts              # Complete secure wallet adapter (single file!)
+├── App.tsx                 # Main app with security status
+└── components/             # UI components
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+**Everything you need is in `adapter.ts` - no external dependencies!**
 
-### `npm run build`
+## Testing Security
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. **Monitor Console**: Watch for authentication events
+2. **Test Attack Prevention**: Try injecting fake messages (they'll be blocked)
+3. **Verify Authentication**: Check for "✅ Authenticated" status in header
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Documentation
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- `INTEGRATION_GUIDE.md` - **Quick start guide for dApp developers**
+- `WIDGET_SECURITY.md` - Detailed security implementation guide  
+- `FLOW_EXPLANATION.md` - How the secure communication works
+- Browser console - Real-time security event logging
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+**Status**: 🔒 **SECURE**  
+**Widget Version**: 2.0.0+  
+**Security Level**: Production Ready
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Original Create React App Documentation
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
+### Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 

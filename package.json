@@ -24,8 +24,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:debug": "REACT_APP_SECURITY_DEBUG=true react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:security": "react-scripts test --testNamePattern=security",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

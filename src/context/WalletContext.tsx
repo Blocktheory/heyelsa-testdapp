@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { SUPPORTED_CHAINS, ChainConfig } from '../config/chains';
-import { syncWalletState } from '@heyelsa/chat-widget';
+import { syncWalletState } from 'heyelsa-chat-widget';
 
 declare global {
   interface Window {
