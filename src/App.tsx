@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { WalletProvider } from './context/WalletContext';
 import { ToastProvider } from './context/ToastContext';
 import WalletTiles from './components/WalletTiles';
@@ -8,7 +8,21 @@ import { HeyElsaChatWidget } from '@heyelsa/chat-widget';
 import { createWalletAdapter } from './adapter';
 
 function App() {
-  const messagePort = createWalletAdapter();
+  const [messagePort, setMessagePort] = useState<MessagePort | null>(null);
+  const [sharedSecret, setSharedSecret] = useState<string>('');
+
+  useEffect(() => {
+    // Initialize secure adapter (always secure mode)
+    const secureAdapter = createWalletAdapter({
+      onSharedSecretReceived: (secret) => {
+        setSharedSecret(secret);
+      },
+      maxMessageAge: 3600000, // 1 hour for development
+      debugMode: true, // Enable detailed logging
+    });
+    setMessagePort(secureAdapter.port2);
+  }, []);
+
 
   return (
     <WalletProvider>
@@ -23,14 +37,16 @@ function App() {
           <main className="py-8">
             <NetworkToastHandler />
             <WalletTiles />
-            <HeyElsaChatWidget 
-              position="bottom-right"
-              messagePort={messagePort}
-              keyId="uniswap"
-              customStyles={{
-                primaryColor: "#D90013"
-              }}
-            />
+            {messagePort && (
+              <HeyElsaChatWidget 
+                position="bottom-right"
+                messagePort={messagePort}
+                keyId="uniswap"
+                customStyles={{
+                  primaryColor: "#D90013"
+                }}
+              />
+            )}
           </main>
         </div>
       </ToastProvider>
