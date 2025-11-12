@@ -4,7 +4,7 @@ import { WalletProvider } from './context/WalletContext';
 import { ToastProvider } from './context/ToastContext';
 import WalletTiles from './components/WalletTiles';
 import NetworkToastHandler from './components/NetworkToastHandler';
-import { HeyElsaChatWidget } from 'heyelsa-chat-widget';
+import { HeyElsaChatWidget } from '@heyelsa/chat-widget';
 import { createWalletAdapter } from './adapter';
 
 function App() {
