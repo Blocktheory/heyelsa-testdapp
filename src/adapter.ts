@@ -286,14 +286,6 @@ export function createWalletAdapter(options: AdapterOptions = {}) {
         return false;
       }
 
-      console.log('🔒 Adapter: Validating authenticated message:', {
-        requestId: message.requestId,
-        action: message.action,
-        timestamp: message.timestamp,
-        currentTime: Date.now(),
-        timeDiff: Date.now() - message.timestamp
-      });
-
       const isValid = await dappAuthenticator.verifyIncomingMessage(message as AuthenticatedMessage);
       
       return isValid;
