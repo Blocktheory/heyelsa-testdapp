@@ -9,7 +9,7 @@ import { createWalletAdapter } from './adapter';
 
 function App() {
   const [messagePort, setMessagePort] = useState<MessagePort | null>(null);
-  const [sharedSecret, setSharedSecret] = useState<string>('');
+  const [, setSharedSecret] = useState<string>('');
 
   useEffect(() => {
     // Initialize secure adapter (always secure mode)
@@ -18,7 +18,7 @@ function App() {
         setSharedSecret(secret);
       },
       maxMessageAge: 3600000, // 1 hour for development
-      debugMode: true, // Enable detailed logging
+      debugMode: process.env.NODE_ENV === 'development' // Enable detailed logging in dev only
     });
     setMessagePort(secureAdapter.port2);
   }, []);

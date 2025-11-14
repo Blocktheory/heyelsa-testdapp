@@ -180,7 +180,7 @@ export function createWalletAdapter(options: AdapterOptions = {}) {
     sharedSecret,
     onSharedSecretReceived,
     maxMessageAge = 300000, // 5 minutes default
-    debugMode = false
+    debugMode = false // eslint-disable-line @typescript-eslint/no-unused-vars
   } = options;
 
   // Configure message age tolerance
@@ -296,6 +296,7 @@ export function createWalletAdapter(options: AdapterOptions = {}) {
   }
 
   function stripAuthenticationFields(message: AuthenticatedMessage): AdapterRequest {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { timestamp, signature, ...cleanMessage } = message;
     return cleanMessage; // Keep nonce - it's needed for challenge-response binding
   }

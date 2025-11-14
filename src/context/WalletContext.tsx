@@ -274,7 +274,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         disconnect();
       };
 
-      const handleWalletConnect = async (event: any) => {
+      const handleWalletConnect = async (_event: any) => {
         // Refresh wallet context after bridge connection
         try {
           await connectWallet();
@@ -282,7 +282,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
       };
 
-      const handleNetworkChanged = async (event: any) => {
+      const handleNetworkChanged = async (_event: any) => {
         // Update current chain after network switch
         const chain = await getCurrentChain();
         if (account && chain) {
